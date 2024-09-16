@@ -5,6 +5,11 @@ VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmpMan", "EmpMan\EmpMan.csproj", "{D8E31085-1AB7-495A-B71B-11F92F2C9CC9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "DatabaseScripts", "{AAE0938D-FBA0-4661-9BB5-730D86BE88C5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Pictures\tech exam\stored_procedures.sql = ..\..\..\Pictures\tech exam\stored_procedures.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
