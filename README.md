@@ -31,7 +31,7 @@ Update the connection string in `appsettings.json` to match your SQL Server setu
 
 ```json
 "ConnectionStrings": {
-  "EmpManDBContext": "Server=YOUR_SERVER_NAME\\SQLEXPRESS;Database=EmpMan;Trusted_Connection=True;"
+  "EmpManDBContext": "Server=YOUR_SERVER_NAME\\SQLEXPRESS;Database=EmpMan;Trusted_Connection=True;MultipleActiveResultSets=true;trustservercertificate=true"
 }
 ```
 
