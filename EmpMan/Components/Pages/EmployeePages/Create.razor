@@ -1,0 +1,79 @@
+﻿@page "/employees/create"
+@using EmpMan.Models
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Create Employee</PageTitle>
+
+<h1>Create New Employee</h1>
+
+@if (employee == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm FormName="EmployeeCreateForm" Model="@employee" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="fname">First Name:</label>
+            <InputText id="fname" class="form-control" @bind-Value="employee.FName" />
+            <ValidationMessage For="@(() => employee.FName)" />
+        </div>
+
+        <div class="form-group">
+            <label for="lname">Last Name:</label>
+            <InputText id="lname" class="form-control" @bind-Value="employee.LName" />
+            <ValidationMessage For="@(() => employee.LName)" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <InputText id="email" class="form-control" @bind-Value="employee.Email" />
+            <ValidationMessage For="@(() => employee.Email)" />
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Create Employee</button> | 
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    private Employee employee = new Employee();
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            Console.WriteLine($"Creating Employee: FName = {employee.FName}, LName = {employee.LName}, Email = {employee.Email}");
+
+            var client = HttpClientFactory.CreateClient("EmpManApiClient");
+            var response = await client.PostAsJsonAsync("api/Employees", employee); // Send POST request to create employee
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Employee created successfully.");
+                Navigation.NavigateTo("/employees"); // Redirect to the employees list after successful creation
+            }
+            else
+            {
+                Console.WriteLine($"Failed to create employee: {response.ReasonPhrase}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/employees");
+    }
+}

@@ -1,0 +1,111 @@
+﻿@page "/employees/edit/{id:int}"
+@using EmpMan.Models
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Employee</PageTitle>
+
+<h1>Edit Employee</h1>
+
+@if (employee == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm FormName="EmployeeEditForm" Model="@employee" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="fname">First Name:</label>
+            <InputText id="fname" class="form-control" @bind-Value="employee.FName" />
+            <ValidationMessage For="@(() => employee.FName)" />
+        </div>
+
+        <div class="form-group">
+            <label for="lname">Last Name:</label>
+            <InputText id="lname" class="form-control" @bind-Value="employee.LName" />
+            <ValidationMessage For="@(() => employee.LName)" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <InputText id="email" class="form-control" @bind-Value="employee.Email" />
+            <ValidationMessage For="@(() => employee.Email)" />
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Save Changes</button> | 
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+
+
+
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Employee employee = new Employee();
+    private bool isLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient("EmpManApiClient");
+            employee = await client.GetFromJsonAsync<Employee>($"api/Employees/{Id}");
+
+            if (employee == null)
+            {
+                Navigation.NavigateTo("/employees");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            Console.WriteLine($"Submitting Employee: Id = {employee.Id}, FName = {employee.FName}, LName = {employee.LName}, Email = {employee.Email}");
+
+            var client = HttpClientFactory.CreateClient("EmpManApiClient");
+            var response = await client.PutAsJsonAsync($"api/Employees/{employee.Id}", employee); // Ensure this points to your API
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Employee updated successfully.");
+                Navigation.NavigateTo("/employees");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to update employee: {response.ReasonPhrase}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/employees");
+    }
+}
